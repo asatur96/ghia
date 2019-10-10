@@ -71,9 +71,9 @@ class GitHub:
         url = f'{self.API}/repos/{owner}/{repo}/issues/{issue_number}/labels'
         return self._issues_json_get(url)
     
-    def post_issue_label(self, owner, repo, issue_number, label):
-        url = f'{self.API}/repos/{owner}/{repo}/issues/{issue_number}/labels'
-        r = self.session.post(url, json={"labels": label})
+    def reset_issue_label(self, owner, repo, issue_number, label):
+        url = f'{self.API}/repos/{owner}/{repo}/issues/{issue_number}'
+        r = self.session.patch(url, json={"labels": label})
         r.raise_for_status()
 
     def post_assignees(self, owner, repo, number, assignees):
@@ -196,14 +196,14 @@ class Ghia:
                 cur_report.msgs.append(f'({url})')
 
                 answers = self.run_issue(reposlug[0], reposlug[1], issue)
-                existing_labels = self.github.get_issue_labels(reposlug[0], reposlug[1], issue['number'])
+
                 if not answers and self.fallback is not None:
-                    existing_labels = self.github.get_issue_labels(reposlug[0], reposlug[1], issue['number'])
+                    existing_labels = set(l['name'] for l in issue['labels'])
                     
                     is_exist_fallback_label = False
                     label = self.fallback['label'][0]
                     for el in existing_labels:
-                        if el['name'] == label:
+                        if el == label:
                             is_exist_fallback_label = True
                             cur_report.fallback = f'already has label "{label}"'
                             break
@@ -211,7 +211,8 @@ class Ghia:
                         label = self.fallback['label'][0]
                         cur_report.fallback = f'added label "{label}"'
                         if self.dryrun is False:
-                            self.github.post_issue_label(reposlug[0], reposlug[1], issue['number'], self.fallback['label'])
+                            existing_labels.add(label)
+                            self.github.reset_issue_label(reposlug[0], reposlug[1], issue['number'], list(existing_labels))
 
                 for k in sorted(answers.keys(), key=str.casefold):
                     cur_report.msgs.append(answers[k])
