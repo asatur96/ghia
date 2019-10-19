@@ -15,23 +15,23 @@ def webhook_verify_signature(payload, signature, secret, encoding='utf-8'):
 
 def process_webhook_issues(payload):
     ghia = flask.current_app.config['ghia']
-    print('process webhook issues')
+
     try:
         action = payload['action']
-        issues = payload['issues']
-        issue_number = payload['number']
-        issue_url = ['url'].split('/')
+        issue = payload['issue']
+        issue_number = payload['issue']['number']
+        issue_url = payload['issue']['url'].split('/')
         owner = issue_url[-4]
         repo = issue_url[-3]
         reposlug = f'{owner}/{repo}'
 
-        if action not in ('opened', 'synchronize'):
+        if action not in ('opened', 'edited', 'synchronize'):
             flask.current_app.logger.info(
                 f'Action {action} from {reposlug}#{issue_number} skipped'
             )
             return 'Accepted but action not processed', 202
 
-        ghia.run_repo(owner, repo)
+        ghia.run_issue(owner, repo, issue)
 
         flask.current_app.logger.info(
             f'Action {action} from {reposlug}#{issue_number} processed'
@@ -71,7 +71,7 @@ def create_app(*args, ** kwargs):
     app = flask.Flask(__name__)
     cfg = configparser.ConfigParser()
     if 'GHIA_CONFIG' not in os.environ:
-        app.logger.critical('Config not supplied by envvar FILABEL_CONFIG')
+        app.logger.critical('Config not supplied by envvar GHIA_CONFIG')
         exit(1)
     configs = os.environ['GHIA_CONFIG'].split(':')
     cfg.read(configs)
@@ -79,7 +79,7 @@ def create_app(*args, ** kwargs):
     try:
         app.config['rules'] = parse_rules(cfg)
     except Exception:
-        app.logger.critical('incorrect configuration format', err=True)
+        app.logger.critical('incorrect configuration format')
         exit(1)
 
     try:
@@ -89,7 +89,7 @@ def create_app(*args, ** kwargs):
         app.logger.critical('incorrect configuration format', err=True)
         exit(1)
 
-    ghia = Ghia(app.config['github_token'], app.config['rules'])
+    ghia = Ghia(app.config['github_token'], app.config['rules'], 'append', False)
 
     try:
         app.config['github_user'] = ghia.github.user()
@@ -106,7 +106,6 @@ def create_app(*args, ** kwargs):
     
     @app.route('/', methods=['GET'])
     def index():
-        print('method get')
         return flask.render_template(
             'infopage.html',
             rules=flask.current_app.config['rules'],
@@ -115,7 +114,6 @@ def create_app(*args, ** kwargs):
     
     @app.route('/', methods=['POST'])
     def webhook_listener():
-        print('method post')
         signature = flask.request.headers.get('X-Hub-Signature', '')
         event = flask.request.headers.get('X-GitHub-Event', '')
         payload = flask.request.get_json()
@@ -137,3 +135,4 @@ def create_app(*args, ** kwargs):
         return webhook_processors[event](payload)
 
     return app
+
