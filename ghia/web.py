@@ -25,7 +25,9 @@ def process_webhook_issues(payload):
         repo = issue_url[-3]
         reposlug = f'{owner}/{repo}'
 
-        if action not in ('opened', 'edited', 'synchronize'):
+        if action not in ('opened', 'edited', 'transferred',
+                         'reopened', 'assigned', 'unassigned',
+                         'labeled', 'unlabeled'):
             flask.current_app.logger.info(
                 f'Action {action} from {reposlug}#{issue_number} skipped'
             )
