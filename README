@@ -1,0 +1,4 @@
+GHIA: pattern-based assigning of GitHub issues
+
+This simple service uses GitHub webhooks to catch updates of GitHub repository Issues
+and update the assignees of that Issues by matching issues with preconfigured patterns.
