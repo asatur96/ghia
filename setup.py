@@ -5,7 +5,7 @@ with open('README') as f:
 
 setup(
     name='GHIA',
-    version='0.2',
+    version='0.3',
     description='GHIA: pattern-based assigning of GitHub issues',
     author='Asatur Balyan',
     author_email='balyaasa@fit.cvut.cz',
@@ -14,4 +14,9 @@ setup(
     url='https://github.com/asatur96/ghia',
     install_requires=['Flask', 'click>=6', 'requests'],
     packages=['ghia'],
+    classifiers=[
+        'Framework :: Flask',
+        'Environment :: Console',
+        'Environment :: Web Environment'
+    ]
 )
