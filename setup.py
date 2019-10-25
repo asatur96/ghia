@@ -17,7 +17,9 @@ setup(
     classifiers=[
         'Framework :: Flask',
         'Environment :: Console',
-        'Environment :: Web Environment'
+        'Environment :: Web Environment',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python'
     ],
     package_data={'ghia_asatur96': ['templates/*.html', 'static/*.css']}
 )
