@@ -15,7 +15,7 @@ setup(
     keywords='ghia',
     install_requires=['Flask', 'click>=6', 'requests'],
     packages=['ghia_asatur96'],
-    summary='ghia',
+    summary='ghia, github, issue, assigning',
     classifiers=[
         'Framework :: Flask',
         'Environment :: Console',
