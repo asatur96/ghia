@@ -5,7 +5,7 @@ with open('README') as f:
 
 setup(
     name='ghia_asatur96',
-    version='0.3.10',
+    version='0.3.11',
     description='GHIA: pattern-based assigning of GitHub issues',
     author='Asatur Balyan',
     author_email='balyaasa@fit.cvut.cz',
@@ -14,7 +14,7 @@ setup(
     url='https://github.com/asatur96/ghia_asatur96',
     keywords='ghia, github, issue, assigning',
     install_requires=['Flask', 'click>=6', 'requests'],
-    packages=['ghia_asatur96'],
+    packages=['ghia'],
     classifiers=[
         'Framework :: Flask',
         'Environment :: Console',
@@ -22,10 +22,10 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python'
     ],
-    package_data={'ghia_asatur96': ['templates/*.html', 'static/*.css']},
+    package_data={'ghia': ['templates/*.html', 'static/*.css']},
     entry_points={
         'console_scripts': [
-            'ghia=ghia_asatur96.__main__.py',
+            'ghia=ghia.__main__.py',
         ],
     }
 )
