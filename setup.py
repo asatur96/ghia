@@ -22,5 +22,10 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python'
     ],
-    package_data={'ghia_asatur96': ['templates/*.html', 'static/*.css']}
+    package_data={'ghia_asatur96': ['templates/*.html', 'static/*.css']},
+    entry_points={
+        'console_scripts': [
+            'ghia=ghia_asatur96.__main__.py',
+        ],
+    }
 )
