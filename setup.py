@@ -4,7 +4,7 @@ with open('README') as f:
     long_description = ''.join(f.readlines())
 
 setup(
-    name='ghia_asatur96',
+    name='ghia-asatur96',
     version='0.3.11',
     description='GHIA: pattern-based assigning of GitHub issues',
     author='Asatur Balyan',
