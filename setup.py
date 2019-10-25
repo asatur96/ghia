@@ -12,7 +12,7 @@ setup(
     long_description=long_description,
     license='Public Domain',
     url='https://github.com/asatur96/ghia_asatur96',
-    keywords='ghia',
+    keywords='ghia, github, issue, assigning',
     install_requires=['Flask', 'click>=6', 'requests'],
     packages=['ghia_asatur96'],
     summary='ghia, github, issue, assigning',
