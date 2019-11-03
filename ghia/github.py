@@ -1,6 +1,10 @@
-import enum
+import configparser
+import click
+import flask
+import hashlib
+import hmac
+import os
 import re
-import itertools
 import requests
 
 
@@ -18,7 +22,7 @@ class GitHub:
         """
         self.token = token
         self.session = session or requests.Session()
-        self.session.headers = {'User-Agent': 'ghia'}
+        self.session.headers = {'User-Agent': 'python/ghia'}
         self.session.auth = self._token_auth
 
     def _token_auth(self, req):
@@ -28,48 +32,57 @@ class GitHub:
         req.headers['Authorization'] = 'token ' + self.token
         return req
 
-    def _issues_json_get(self, url, params=None):
+    def _paginated_json_get(self, url, params=None):
         r = self.session.get(url, params=params)
         r.raise_for_status()
         json = r.json()
         if 'next' in r.links and 'url' in r.links['next']:
-            json += self._issues_json_get(r.links['next']['url'], params)
+            json += self._paginated_json_get(r.links['next']['url'], params)
         return json
 
     def user(self):
         """
         Get current user authenticated by token
         """
-        return self._issues_json_get(f'{self.API}/user')
+        return self._paginated_json_get(f'{self.API}/user')
 
-    def issues(self, owner, repo):
-        try:
-            params = {'state': 'open'}
-            url = f'{self.API}/repos/{owner}/{repo}/issues'
-            return self._issues_json_get(url, params)
-        except:
-            error_msg = click.style('ERROR', fg='red', bold=True)
-            error_msg = f'{error_msg}: Could not list issues for repository {repo_path}'
-            click.secho(error_msg, err=True)
-            sys.exit(10)
-    
-    def get_issue_labels(self, owner, repo, issue_number):
-        url = f'{self.API}/repos/{owner}/{repo}/issues/{issue_number}/labels'
-        return self._issues_json_get(url)
-    
-    def reset_issue_label(self, owner, repo, issue_number, label):
-        url = f'{self.API}/repos/{owner}/{repo}/issues/{issue_number}'
-        r = self.session.patch(url, json={"labels": label})
-        r.raise_for_status()
+    def issues(self, owner, repo, state='open', assignee=None):
+        """
+        Get issues of a repo
+        owner: GitHub user or org
+        repo: repo name
+        state: open, closed, all (default open)
+        assignee: optional filter for assignees (None, "none", "<username>", or "*")
+        """
+        params = {'state': state}
+        if assignee is not None:
+            params['assignee'] = assignee
+        url = f'{self.API}/repos/{owner}/{repo}/issues'
+        return self._paginated_json_get(url, params)
 
-    def post_assignees(self, owner, repo, number, assignees):
-        url = f'{self.API}/repos/{owner}/{repo}/issues/{number}/assignees'
-        r = self.session.post(url, json={'assignees': assignees})
-        r.raise_for_status()
-        return r.json()['assignees']
-
-    def remove_assignees(self, owner, repo, number, assignees):
-        url = f'{self.API}/repos/{owner}/{repo}/issues/{number}/assignees'
-        r = self.session.delete(url, json={'assignees': assignees})
+    def set_issue_assignees(self, owner, repo, number, assignees):
+        """
+        Sets assignees for the issue. Replaces all existing assignees.
+        owner: GitHub user or org
+        repo: repo name
+        number: issue id
+        assignees: list of usernames (as strings)
+        """
+        url = f'{self.API}/repos/{owner}/{repo}/issues/{number}'
+        r = self.session.patch(url, json={'assignees': assignees})
         r.raise_for_status()
         return r.json()['assignees']
+
+    def set_issue_labels(self, owner, repo, number, labels):
+        """
+        Sets labels for the issue. Replaces all existing labels.
+        owner: GitHub user or org
+        repo: repo name
+        number: issue id
+        labels: list of labels (as strings)
+        """
+        url = f'{self.API}/repos/{owner}/{repo}/issues/{number}'
+        r = self.session.patch(url, json={'labels': labels})
+        r.raise_for_status()
+        return r.json()['labels']
+
