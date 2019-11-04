@@ -22,7 +22,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python'
     ],
-    package_data={'ghia': ['templates/*.html']},
+    package_data={'ghia': ['templates/*']},
     entry_points={
         'console_scripts': [
             'ghia=ghia.__main__.py',
