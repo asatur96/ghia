@@ -1,11 +1,16 @@
 def parse_rules(cfg):
-    return {
-        rule: list(filter(None, cfg['patterns'][rule].splitlines()))
-        for rule in cfg['patterns']
+    """
+    Parse labels to dict where label is key and list
+    of patterns is corresponding value
+    cfg: ConfigParser with loaded configuration of labels
+    """
+    patterns = {
+        username: list(filter(None, cfg['patterns'][username].splitlines()))
+        for username in cfg['patterns']
     }
-
-def parse_fallback(cfg):
-    return {
-        label: list(filter(None, cfg['fallback'][label].splitlines()))
-        for label in cfg['fallback']
-    }
+    fallback = cfg.get('fallback', 'label', fallback=None)
+    for user_patterns in patterns.values():
+        for pattern in user_patterns:
+            t, p = pattern.split(':', 1)
+            assert t in GHIA.MATCHERS.keys()
+    return patterns, fallback

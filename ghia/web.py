@@ -1,4 +1,5 @@
 from ghia.logic import GHIA
+from ghia.utils import parse_rules
 
 import configparser
 import click

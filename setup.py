@@ -5,7 +5,7 @@ with open('README') as f:
 
 setup(
     name='ghia-balyaasa',
-    version='0.3.2.3',
+    version='0.3.2.4',
     description='GHIA: pattern-based assigning of GitHub issues',
     author='Asatur Balyan',
     author_email='balyaasa@fit.cvut.cz',
