@@ -27,5 +27,6 @@ setup(
         'console_scripts': [
             'ghia=ghia.__main__.py',
         ],
-    }
+    },
+    zip_safe=False,
 )
