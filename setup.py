@@ -5,7 +5,7 @@ with open('README') as f:
 
 setup(
     name='ghia-balyaasa',
-    version='0.3.2.6',
+    version='0.3.2.7',
     description='GHIA: pattern-based assigning of GitHub issues',
     author='Asatur Balyan',
     author_email='balyaasa@fit.cvut.cz',
@@ -22,7 +22,6 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python'
     ],
-    package_data={'ghia': ['templates/*', 'static/*']},
     entry_points={
         'console_scripts': [
             'ghia=ghia.__main__.py',
