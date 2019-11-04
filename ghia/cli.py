@@ -7,7 +7,7 @@ import os
 import re
 import requests
 
-from ghia.logic import Ghia, PrinterObserver
+from ghia.logic import GHIA, PrinterObserver
 
 
 def parse_rules(cfg):
